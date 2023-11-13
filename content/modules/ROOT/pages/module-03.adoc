@@ -1,138 +1,57 @@
-= Managing an Application from GitHub
+== Create a blueprint
 
-In the first half of this workshop, we packaged an application into this portable container format manually using rpms.
-In the second half, we will consider that you may want to manage software from GitHub or some kind of software versioning application.
-Rather than installing rpms, we have individual software files and pull them out of that version control into a group of systems.
+Image Builder uses blueprints to create system images, however, none
+exist on this system yet.
 
-== Install RHEL 8 UBI
+Select the _Create Blueprint_ button to start building your first
+blueprint.
 
-In this lab, we will be using a different Red Hat Enterprise Linux version in my container. 
+.Select Create Blueprint
+image::Create-Blueprint.png[Select Create Blueprint]
 
-. Verify the host system release 
+The first step to creating a new blueprint is naming it. It is
+recommended that you also include a description so that others using
+this blueprint know what system image they are building. For this lab,
+use *node-app-server* as the _Name_ and *A node.js and NGINX installed
+web application server* as the _Description_.
 
-+
-[source,bash]
-----
-cat /etc/redhat-release
-----
-+ 
-NOTE: The `bastion` system is Red Hat Enterprise Linux 9, and when you built the previous container, you used the UBI9 image. This means both the image and the container were built off the same Red Hat Enterprise Linux packages. 
+.Name Your Blueprint
+image::Create-blueprint-dialog.png[Name Your Blueprint]
 
-. As we did previously in this lab, Use `buildah from` to pull down the Red Hat Enterprise Linux 8 UBI.
+Click `+Next+`.
 
-+
-[source,bash]
-----
-buildah from registry.access.redhat.com/ubi8/ubi
-----
+.blueprint
+image::blueprint-next-button.png[blueprint]
 
-NOTE: Because you already pulled one image named `ubi-working-container` this one is called `ubi-working-container-1`. 
+Next we’ll customize the blueprint.
 
-[#prerequisites]
-== Install Prerequisites
+Add in the first package, `+nodejs+`, into the `+Available packages+`
+search bar. Once the filter has been applied, you should now see
+packages with `+nodejs+` included in their name.
 
-Now that you have a working container, you will use the same process as before installing all the prerequisites, changing config files, and manipulating the contents of this container to be in the desired state.
+.add nodejs
+image::nodejs-select.png[add nodejs]
 
-The software you will install is a JavaScript-based game that runs on a web browser. As before in the lab, use dnf to install software inside the container. 
+[arabic]
+. Click on `+nodejs+`.
+. Click the `+>+` symbol to add it.
 
-. Use `buildah run` and install Apache (`httpd`) into the `ubi-working-container-1` container. 
-+
-[source,bash]
-----
-buildah run ubi-working-container-1 -- dnf -y install httpd
-----
+Repeat these actions for the `+nginx+` package and then click `+Next+`.
 
-== Enable Service
+.added
+image::packages-added.png[added]
 
-The next thing to do is to use a systemctl to enable the service. The ubi-init provides full systemd service to the container.
-This will start up any of the services that are enabled. 
+Keep clicking the `+Next+` button until you reach the `+Other+` tab of
+the customizations section within the blueprint creation dialog. As you
+can see, image builder provides the ability to add custom kernel
+parameters, add users, open firewall ports, and more.
 
-. Enable the `httpd` service using `buildah run`
+Then, enter a hostname `+node-app-server+` for the image.
 
-+
-[source,bash]
-----
-buildah run ubi-working-container-1 -- systemctl enable httpd
-----
+image:../assets/node-app-server-hostname.png[../assets/node-app-server-hostname]
 
-NOTE: The UBI standard image doesn't have systemd installed on it by default. The `ubi-init` container image does include systemd. Plan accordingly to which image you use to build applications.  
+Next, click `+Review+`
+image:../assets/review-tab-button.png[../assets/review-tab-button]
 
-== Explore Source Materials
-
-A GitHub repository has already been synchronized to `/home/devops/clumsy-bird/` This repository contains the configurations for your application.
-
-. Verify the repository is cloned inside the `/home/devops/` directory
-+
-[source,bash]
-----
-cd /home/devops/
-----
-
-+
-[source,bash]
-----
-git clone https://github.com/ellisonleao/clumsy-bird
-----
-+
-NOTE: The output states that the software has already been checked out. 
-+
-. Explore the JavaScript contents, index files, and everything else that we need for this web-based JavaScript software.
-+
-[source,bash,role=execute]
-----
-ls clumsy-bird
-----
-
-== Add Source Materials to Container
-
-. Now that you have verified the source materials exist, you will put the software inside of my container image using the `buildah copy` command.
-+
-[source,bash]
-----
-buildah copy ubi-working-container-1 clumsy-bird /var/www/html
-----
-
-[#container]
-== Enable Container in Background
-
-In the previous section of this lab, you ran the game natively through interactive mode. Because you are now building a web application you will need to run the container in the background and access it through a web address. 
-
-. Execute `buildah config` to specify a port and initialize the container. 
-
-+
-[source,bash]
-----
-buildah config --port 80 --cmd "/usr/sbin/init" ubi-working-container-1
-----
-
-NOTE: The command makes a configuration change to this container. I'm configuring this container to accept connections to its port 80. When the container starts up, it should run the init command, which, in this case, is going to be the Apache daemon right from earlier when I enabled it.
-
-== Commit Container and Deploy
-
-. Now that we have a container in a working configured state, it is time to make that permanent by committing it to a container image called `clumsy-bird`
-+
-[source,bash]
-----
-buildah commit ubi-working-container-1 clumsy-bird
-----
-
-. Verify that the image was created with `podman`
-+
-[source,bash]
-----
-podman images
-----
-+
-. Run the container Now it's time to run the container. 
-+
-[source,bash]
-----
-podman run -d -p 8500:80 clumsy-bird
-----
-
-== Verify Application
-
-Verify that the application is running by navigating to
-
-http://bastion.{guid}.example.opentlc.com:8500
-
+Finally, click `+Save+` to save the blueprint.
+image:../assets/blueprint-save.png[../assets/blueprint-save]
