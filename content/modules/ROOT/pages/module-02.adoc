@@ -7,12 +7,12 @@ a new browser tab or window.
 .web console
 image::pop-out-2.png[web console]
 
-Click `+Advanced+`
+Click `Advanced`
 
 .Connection not private
 image::connection-not-private.png[Connection not private]
 
-Then click `+Proceed to rhel.xxxx.instruqt.io+`
+Then click `Proceed to rhel.xxxx.instruqt.io`
 
 .Proceed
 image::proceed.png[Proceed]
@@ -40,7 +40,7 @@ image::Web-console-login.png[Web Console Login]
 Now that you are logged into the Web Console, we must turn on
 administrative access.
 
-Click `+Turn on administrative access+`.
+Click `Turn on administrative access`.
 
 .admin access
 image::turn-on-admin.png[admin access]
@@ -49,7 +49,7 @@ Next do the following:
 
 [arabic]
 . Enter the password: *redhat*
-. Click `+Authenticate+`
+. Click `Authenticate`
 
 .auth
 image::auth.png[auth]
